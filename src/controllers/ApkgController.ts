@@ -322,7 +322,7 @@ class ApkgController {
         return;
       }
 
-      const userIsPaying = res.locals.patreon === true || res.locals.subscriber === true;
+      const userIsPaying = isPaying(res.locals);
       const maxNotes = userIsPaying ? 5000 : 1000;
 
       const rawParentPageId = req.body?.parent_page_id;

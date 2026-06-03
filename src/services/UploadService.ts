@@ -394,7 +394,7 @@ class UploadService {
         candidateCardCount: totalCards,
         isPaying: paying,
       });
-    } else if (totalCards > ANONYMOUS_CARD_CAP) {
+    } else if (!paying && totalCards > ANONYMOUS_CARD_CAP) {
       if (authenticated) {
         throw new MonthlyLimitError(
           MONTHLY_CARD_LIMIT,

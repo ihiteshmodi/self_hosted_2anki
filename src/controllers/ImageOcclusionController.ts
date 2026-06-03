@@ -3,6 +3,7 @@ import path from "node:path";
 import express from "express";
 import { CreateImageOcclusionDeckUseCase, ImageOcclusionImage, OcclusionRect } from "../usecases/imageOcclusion/CreateImageOcclusionDeckUseCase";
 import { buildContentDisposition } from "../lib/buildContentDisposition";
+import { isPaying } from "../lib/isPaying";
 
 interface RawPoint { x: unknown; y: unknown; }
 interface RawRect { x: unknown; y: unknown; w: unknown; h: unknown; label?: unknown; shape?: unknown; points?: unknown; groupId?: unknown; }
@@ -45,9 +46,9 @@ class ImageOcclusionController {
     if (images.length === 0) { res.status(400).json({ message: "At least one image is required." }); return; }
     const uploadedFiles = (req.files as Express.Multer.File[] | undefined ?? []);
     const imageFiles = uploadedFiles.map((f) => ({ name: f.originalname, path: f.path }));
-    const isPaying = res.locals["patreon"] === true || res.locals["subscriber"] === true;
+    const userIsPaying = isPaying(res.locals);
     let apkgPath: string;
-    try { apkgPath = await this.useCase.execute({ deckName, mode, images, imageFiles, isPaying }); }
+    try { apkgPath = await this.useCase.execute({ deckName, mode, images, imageFiles, isPaying: userIsPaying }); }
     catch (err) {
       const e = err as NodeJS.ErrnoException & { status?: number };
       if (e.status === 403) { res.status(403).json({ message: e.message }); return; }

@@ -5,6 +5,13 @@ const PAYING_MAX_FIELD_SIZE = FREE_USER_MAX_FIELD_SIZE * 10;
 const PAYING_MAX_UPLOAD_SIZE = FREE_USER_MAX_UPLOAD_SIZE * 100;
 
 export const getUploadLimits = (paying: boolean) => {
+  if (process.env.LOCAL_DEV === 'true') {
+    return {
+      fileSize: Number.MAX_SAFE_INTEGER,
+      fieldSize: Number.MAX_SAFE_INTEGER,
+    };
+  }
+
   if (paying) {
     return {
       fileSize: PAYING_MAX_UPLOAD_SIZE,

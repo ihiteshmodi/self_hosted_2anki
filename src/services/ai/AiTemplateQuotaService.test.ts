@@ -13,7 +13,18 @@ function buildUsers(counts: { generate: number; modify: number }) {
 }
 
 describe('AiTemplateQuotaService.check', () => {
+  const previousLocalDev = process.env.LOCAL_DEV;
+
+  afterEach(() => {
+    if (previousLocalDev == null) {
+      delete process.env.LOCAL_DEV;
+      return;
+    }
+    process.env.LOCAL_DEV = previousLocalDev;
+  });
+
   it('returns unlimited for patreon users', async () => {
+    delete process.env.LOCAL_DEV;
     const users = buildUsers({ generate: 1000, modify: 1000 });
     const service = new AiTemplateQuotaService(users as never);
 
@@ -25,6 +36,7 @@ describe('AiTemplateQuotaService.check', () => {
   });
 
   it('returns unlimited for Stripe subscribers', async () => {
+    delete process.env.LOCAL_DEV;
     const users = buildUsers({ generate: 0, modify: 0 });
     const service = new AiTemplateQuotaService(users as never);
     const result = await service.check(1, 'modify', { subscriber: true });
@@ -32,6 +44,7 @@ describe('AiTemplateQuotaService.check', () => {
   });
 
   it('allows a free user under the generate cap', async () => {
+    delete process.env.LOCAL_DEV;
     const users = buildUsers({ generate: 1, modify: 0 });
     const service = new AiTemplateQuotaService(users as never);
     const result = await service.check(7, 'generate', {});
@@ -45,6 +58,7 @@ describe('AiTemplateQuotaService.check', () => {
   });
 
   it('denies a free user at the generate cap', async () => {
+    delete process.env.LOCAL_DEV;
     const users = buildUsers({ generate: FREE_GENERATE_LIMIT, modify: 0 });
     const service = new AiTemplateQuotaService(users as never);
     const result = await service.check(7, 'generate', {});
@@ -53,6 +67,7 @@ describe('AiTemplateQuotaService.check', () => {
   });
 
   it('uses the modify cap when checking modify', async () => {
+    delete process.env.LOCAL_DEV;
     const users = buildUsers({ generate: 0, modify: FREE_MODIFY_LIMIT });
     const service = new AiTemplateQuotaService(users as never);
     const result = await service.check(7, 'modify', {});
@@ -61,11 +76,22 @@ describe('AiTemplateQuotaService.check', () => {
   });
 
   it('treats null locals as non-paying', async () => {
+    delete process.env.LOCAL_DEV;
     const users = buildUsers({ generate: FREE_GENERATE_LIMIT, modify: 0 });
     const service = new AiTemplateQuotaService(users as never);
     const result = await service.check(7, 'generate', null);
     expect(result.allowed).toBe(false);
     expect(result.unlimited).toBe(false);
+  });
+
+  it('returns unlimited in local dev even for free locals', async () => {
+    process.env.LOCAL_DEV = 'true';
+    const users = buildUsers({ generate: FREE_GENERATE_LIMIT, modify: FREE_MODIFY_LIMIT });
+    const service = new AiTemplateQuotaService(users as never);
+    const result = await service.check(7, 'generate', {});
+    expect(result.allowed).toBe(true);
+    expect(result.unlimited).toBe(true);
+    expect(users.getAiTemplateCounts).not.toHaveBeenCalled();
   });
 });
 

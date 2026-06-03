@@ -535,6 +535,34 @@ describe('UploadService.handleSyncUpload — card-limit enforcement', () => {
     expect(capturedSend()).not.toBeNull();
     expect(incrementSpy).not.toHaveBeenCalled();
   });
+
+  it('bypasses anonymous cap in local dev mode', async () => {
+    const previousLocalDev = process.env.LOCAL_DEV;
+    try {
+      process.env.LOCAL_DEV = 'true';
+      mockPackages([{ name: 'deck', cardCount: 22 }]);
+      const usersRepo = buildUsersRepo();
+
+      const service = new UploadService(
+        buildRepository(),
+        {} as JobRepository,
+        usersRepo
+      );
+      const req = buildRequest();
+      const { res, capturedStatus, redirectedTo } = responseWithRedirect();
+
+      await service.handleUpload(req, res);
+
+      expect(capturedStatus()).toBe(200);
+      expect(redirectedTo()).toBeNull();
+    } finally {
+      if (previousLocalDev == null) {
+        delete process.env.LOCAL_DEV;
+      } else {
+        process.env.LOCAL_DEV = previousLocalDev;
+      }
+    }
+  });
 });
 
 describe('UploadService.deleteUpload — cascade', () => {

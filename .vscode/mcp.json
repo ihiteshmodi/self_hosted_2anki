@@ -1,0 +1,13 @@
+{
+  "servers": {
+    "code-review-graph": {
+      "command": "uvx",
+      "args": [
+        "code-review-graph",
+        "serve"
+      ],
+      "cwd": "/Users/hitesh.modi/Desktop/Kinda Personal/Notion to Anki - Localserver/server",
+      "type": "stdio"
+    }
+  }
+}

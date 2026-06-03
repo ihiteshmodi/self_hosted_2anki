@@ -1,4 +1,5 @@
 import UsersRepository from '../../data_layer/UsersRepository';
+import { isPaying } from '../../lib/isPaying';
 
 export const FREE_GENERATE_LIMIT = 3;
 export const FREE_MODIFY_LIMIT = 5;
@@ -22,8 +23,7 @@ export class AiTemplateQuotaService {
   constructor(private readonly users: UsersRepository) {}
 
   private isPaid(locals: UserPaymentLocals | null | undefined): boolean {
-    if (!locals) return false;
-    return locals.patreon === true || locals.subscriber === true;
+    return isPaying((locals ?? undefined) as Record<string, unknown> | undefined);
   }
 
   async check(

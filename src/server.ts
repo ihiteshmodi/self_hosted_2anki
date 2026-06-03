@@ -234,6 +234,11 @@ const serve = async () => {
 
   await setupDatabase(database);
 
+  if (!process.env.DATABASE_URL) {
+    console.info('[startup] DATABASE_URL not set; skipping DB startup tasks');
+    return;
+  }
+
   const drainedCount = await drainFallbackFile(errorEventRepo);
   if (drainedCount > 0) {
     console.info(`[startup] Drained ${drainedCount} error(s) from fallback file into error_events`);
