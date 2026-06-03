@@ -28,6 +28,7 @@ pnpm dev
 ```
 
 The server starts on `http://localhost:2020` and the frontend on `http://localhost:3000`. For server-only work: `pnpm dev:server`.
+MAKE SURE YOU ARE ON "http://localhost:3000" AND NOT OTHER, ELSE SERVER REJECT ED ERROR IWLL COME!
 
 ## Host locally
 
