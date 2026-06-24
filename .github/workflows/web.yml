@@ -21,7 +21,7 @@ jobs:
     name: lint (22.20.0)
     runs-on: blacksmith
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - name: Lint
         run: pnpm --filter 2anki-web lint
@@ -32,7 +32,7 @@ jobs:
     name: build (22.20.0)
     runs-on: blacksmith
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - name: Typecheck
         run: pnpm --filter 2anki-web typecheck
@@ -40,7 +40,7 @@ jobs:
           CI: true
       - name: Cache dist
         id: dist-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: web/build
           key: dist-${{ runner.os }}-${{ hashFiles('web/src/**', 'web/public/**', 'web/index.html', 'web/vite.config.*', 'web/tsconfig*', 'pnpm-lock.yaml') }}
@@ -54,7 +54,7 @@ jobs:
     name: test (22.20.0)
     runs-on: blacksmith
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
       - name: Test
         run: pnpm --filter 2anki-web test
