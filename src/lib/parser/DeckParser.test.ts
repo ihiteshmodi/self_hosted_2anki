@@ -1390,3 +1390,36 @@ describe('embed-images opt-out', () => {
     expect(cardWithMedia).toBeDefined();
   });
 });
+
+describe('toggles placed directly under the page body', () => {
+  const toggleCountInFixture = 3;
+
+  function parseTopLevelToggles(options: { [key: string]: string }) {
+    const fileName = 'notion-top-level-details-toggles.html';
+    const html = fs
+      .readFileSync(path.join(__dirname, '../../test/fixtures', fileName))
+      .toString();
+    return new DeckParser({
+      name: fileName,
+      settings: new CardOption(options),
+      files: [{ name: fileName, contents: html }],
+      noLimits: true,
+      workspace: new Workspace(true, 'fs'),
+    }).payload[0].cards;
+  }
+
+  describe.each([
+    ['all toggles', { all: 'true' }],
+    ['top-level toggles only', { all: 'false' }],
+    ['default options', CardOption.LoadDefaultOptions()],
+  ])('with %s', (_label, options) => {
+    it('makes one card per toggle', () => {
+      expect(parseTopLevelToggles(options)).toHaveLength(toggleCountInFixture);
+    });
+
+    it('never repeats a card', () => {
+      const fronts = parseTopLevelToggles(options).map((card) => card.name);
+      expect(new Set(fronts).size).toBe(fronts.length);
+    });
+  });
+});
