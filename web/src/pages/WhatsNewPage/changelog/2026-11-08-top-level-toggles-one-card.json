@@ -1,0 +1,6 @@
+{
+  "id": "2026-11-08-top-level-toggles-one-card",
+  "date": "2026-11-08",
+  "type": "fix",
+  "title": "Notion exports with toggles directly on the page make one card per toggle, not two"
+}

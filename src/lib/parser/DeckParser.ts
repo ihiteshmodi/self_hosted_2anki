@@ -1078,9 +1078,11 @@ export class DeckParser {
         : [];
 
     return [
-      ...uniqueToggles,
-      ...convertedToggleLists,
-      ...this.findIndentedToggleLists(dom),
+      ...new Set([
+        ...uniqueToggles,
+        ...convertedToggleLists,
+        ...this.findIndentedToggleLists(dom),
+      ]),
     ];
   }
 

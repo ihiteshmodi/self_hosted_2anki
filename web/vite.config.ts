@@ -128,6 +128,11 @@ export default defineConfig(({ command, mode }) => {
             });
           },
         },
+        '^/download/': {
+          target: 'http://localhost:2020',
+          changeOrigin: true,
+          secure: false,
+        },
         // Token-gated ankify session paths (slice 1). The backend handles
         // validation + proxy to the per-session noVNC port in-process.
         '/v': {
